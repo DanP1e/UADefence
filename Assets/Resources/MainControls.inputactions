@@ -1,0 +1,60 @@
+{
+    "name": "MainControls",
+    "maps": [
+        {
+            "name": "Units",
+            "id": "cf2a0147-c68c-4ab7-90cb-2c6aae469e14",
+            "actions": [
+                {
+                    "name": "Shoot",
+                    "type": "Button",
+                    "id": "edf95c20-1e9f-4272-b72a-98549559d7c9",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "2d282783-06fa-4c48-972d-c0e30fee5617",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "Press(pressPoint=0.1)",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Shoot",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "Global",
+            "id": "82e619e6-0290-4039-ab7f-c6b9c70b6576",
+            "actions": [
+                {
+                    "name": "MouseScreenPosition",
+                    "type": "Value",
+                    "id": "a02b6220-3d90-450d-bbcb-805c61622170",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": ""
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "1d1a8013-397d-4e85-8075-f71debb8f491",
+                    "path": "<Mouse>/position",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "MouseScreenPosition",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}
