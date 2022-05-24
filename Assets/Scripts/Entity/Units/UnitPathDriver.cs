@@ -1,7 +1,6 @@
 using InspectorAddons;
 using PathSystem;
 using System;
-using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -13,28 +12,15 @@ namespace Entity.Units
         [SerializeField] private InterfaceComponent<IPathPresenter> _pathPresenterComponent;
 
         private bool _isUpdating = false;
-        private IEnumerator _currentRutine;
+        private bool _isMoving = false;
+        private Vector3 _target;
         private IPathPresenter _pathPresenter;
         private Vector3 _pathPoint;
 
         public UnityEvent TargetReached;
         
         public event Action<IPathDriver, IPathPresenter> LeftPath;
-
-        private IEnumerator StartMovementProcess(Vector3 target)
-        {
-            while (true)
-            {
-                if (Vector3.Distance(Unit.GetInteractPoint(), target) < _tragetReachDistance)
-                {
-                    TargetReached?.Invoke();
-                    UpdateTarget();
-                    break;
-                }
-                Unit.MakeMovementFrame(target, Speed);
-                yield return new WaitForEndOfFrame();
-            }
-        }
+      
         private void UpdateTarget()
         {
             if (!_isUpdating)
@@ -51,12 +37,25 @@ namespace Entity.Units
             MoveTo(_pathPoint);
             _isUpdating = false;
         }
-        private void OnDrawGizmos()
+
+        protected void OnDrawGizmos()
         {
             Gizmos.color = Color.yellow;
             Gizmos.DrawSphere(_pathPoint, _tragetReachDistance);
         }
+        protected void Update()
+        {
+            if (!_isMoving)
+                return;
 
+            if (Vector3.Distance(Unit.GetInteractPoint(), _target) < _tragetReachDistance)
+            {
+                TargetReached?.Invoke();
+                UpdateTarget();
+                return;
+            }
+            Unit.MakeMovementFrame(_target, Speed);
+        }
         protected override void Awake()
         {
             base.Awake();
@@ -74,13 +73,13 @@ namespace Entity.Units
         public override void MoveTo(Vector3 target)
         {
             Stop();
-            _currentRutine = StartMovementProcess(target);
-            StartCoroutine(_currentRutine);
+            _isMoving = true;
+            _target = target;
         }
         public override void Stop()
         {
-            if (_currentRutine != null)
-                StopCoroutine(_currentRutine);
+            _isMoving = false;
+            _target = Unit.GetInteractPoint();
         }
         public void SetPathPresenter(IPathPresenter pathPresenter)
         {

@@ -50,6 +50,7 @@ namespace Weapon
                 if (TryHitObstacle(transform.position, rayDirection, rayLength))
                 {
                     yield return new WaitForFixedUpdate();
+                    break;
                 }                      
                 transform.position += rayDirection;                          
             }

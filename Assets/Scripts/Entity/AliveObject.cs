@@ -8,11 +8,11 @@ namespace Entity
     {
         [SerializeField] private float _health = 100;
         [SerializeField] private float _maxHealth = 100;
+        [SerializeField] private UnityEvent<IAlive> _died;
+        [SerializeField] private UnityEvent<IAlive, float> _damaged;
+        [SerializeField] private UnityEvent<IAlive, float> _healed;
 
-        private bool _aliveFlag = true;
-
-        public UnityEvent Dead;
-        public UnityEvent Damaged;
+        private bool _aliveFlag = true;        
 
         public float Health => _health;
         public float MaxHealth 
@@ -20,8 +20,9 @@ namespace Entity
             get => _maxHealth; 
             protected set => _maxHealth = value; 
         }
-
-        public event Action<float> HealthChanged;
+        public UnityEvent<IAlive> Died { get => _died; }
+        public UnityEvent<IAlive, float> Damaged { get => _damaged; }
+        public UnityEvent<IAlive, float> Healed { get => _healed; }
 
         public bool IsAlive() => _aliveFlag;
         public void MakeDamage(float damage)
@@ -40,12 +41,11 @@ namespace Entity
                 if (_aliveFlag == true)
                 {
                     _aliveFlag = false;
-                    Dead?.Invoke();                   
+                    Died?.Invoke(this);                  
                 }
             }
 
-            HealthChanged?.Invoke(_health - startHealth);
-            Damaged?.Invoke();
+            Damaged?.Invoke(this, _health - startHealth);
         }
         public void Heal(float health)
         {
@@ -65,8 +65,7 @@ namespace Entity
             if(_health > 0)
                 _aliveFlag = true;
 
-            HealthChanged?.Invoke(_health - startHealth);
-            Damaged?.Invoke();
+            Healed?.Invoke(this, _health - startHealth);
         }
         public void Kill()
             => MakeDamage(Health);

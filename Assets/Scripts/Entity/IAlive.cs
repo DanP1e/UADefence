@@ -1,10 +1,13 @@
 using System;
+using UnityEngine.Events;
 
 namespace Entity
 {
     public interface IAlive
     {
-        event Action<float> HealthChanged;
+        public UnityEvent<IAlive> Died { get; }
+        public UnityEvent<IAlive, float> Damaged { get; }
+        public UnityEvent<IAlive, float> Healed { get; }
 
         float Health { get; }
         float MaxHealth { get; }

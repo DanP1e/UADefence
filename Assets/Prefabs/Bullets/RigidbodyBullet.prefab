@@ -17,7 +17,8 @@ GameObject:
   - component: {fileID: -6515986468513660175}
   - component: {fileID: -7247344717682147727}
   - component: {fileID: 1382035628835899882}
-  - component: {fileID: 3549601404289249762}
+  - component: {fileID: 3553640720992156546}
+  - component: {fileID: -5461771390701535514}
   m_Layer: 0
   m_Name: RigidbodyBullet
   m_TagString: Untagged
@@ -101,7 +102,7 @@ SphereCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.5
+  m_Radius: 0.29
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!54 &894060464513439824
 Rigidbody:
@@ -114,7 +115,7 @@ Rigidbody:
   m_Mass: 0.3
   m_Drag: 0
   m_AngularDrag: 0.05
-  m_UseGravity: 1
+  m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 0
@@ -131,7 +132,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 794f73ed84f3ff340a0bdff6b238de38, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _force: 250
+  _force: 1000
   HitEvent:
     m_PersistentCalls:
       m_Calls:
@@ -165,10 +166,10 @@ MonoBehaviour:
   - {fileID: 894060464513439824}
   - {fileID: 8669237361584945814}
   - {fileID: 5627236447471686439}
-  _detonationDelay: 0.05
-  _detonationTime: 0.2
-  _minDamage: 20
-  _maxDamage: 40
+  _detonationDelay: 0.1
+  _detonationTime: 0.5
+  _minDamage: 30
+  _maxDamage: 80
   _damageFunction:
     serializedVersion: 2
     m_Curve:
@@ -237,7 +238,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _findRadius: 5
---- !u!114 &3549601404289249762
+--- !u!114 &3553640720992156546
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -246,17 +247,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 1072959347923825718}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0f30f00ce8de63d4eb905a24f3d2ee3b, type: 3}
+  m_Script: {fileID: 11500000, guid: 49a225fa44ede54459daa4262861104a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _health: 40
-  _maxHealth: 40
-  Dead:
+  _time: 5
+  _isCyclical: 0
+  _timeoutEvent:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: -6515986468513660175}
-        m_TargetAssemblyTypeName: Weapon.BulletDetonator, Assembly-CSharp
-        m_MethodName: Detonate
+      - m_Target: {fileID: -5461771390701535514}
+        m_TargetAssemblyTypeName: Effects.ObjectDestroyer, Assembly-CSharp
+        m_MethodName: DestroyObjects
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -266,9 +267,116 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  Damaged:
-    m_PersistentCalls:
-      m_Calls: []
+--- !u!114 &-5461771390701535514
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1072959347923825718}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 188a556aabbd57146a717008fdf26eb7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _destroyedObjects:
+  - {fileID: 1072959347923825718}
+--- !u!82 &1493326694496640345
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2239111536720900483}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 2999419910317558418, guid: 76e009564b7288844858c5b9dd9b2aa1, type: 2}
+  m_audioClip: {fileID: 8300000, guid: e4d8218450b755c4a93cf35ba4e79daa, type: 3}
+  m_PlayOnAwake: 1
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &2300704110747657779
 GameObject:
   m_ObjectHideFlags: 0

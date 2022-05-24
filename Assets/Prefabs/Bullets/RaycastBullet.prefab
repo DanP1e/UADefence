@@ -99,7 +99,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c37d6d15a32ce4843a38c3571fb381be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Speed: 500
+  Speed: 2000
   HitEvent:
     m_PersistentCalls:
       m_Calls:
@@ -133,7 +133,7 @@ MonoBehaviour:
   - {fileID: 8669237361584945814}
   _detonationDelay: 0
   _detonationTime: 0.2
-  _minDamage: 2
+  _minDamage: 4
   _maxDamage: 8
   _damageFunction:
     serializedVersion: 2
@@ -191,6 +191,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _time: 0.1
+  _isCyclical: 0
   _timeoutEvent:
     m_PersistentCalls:
       m_Calls:

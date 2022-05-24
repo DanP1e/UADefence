@@ -80,7 +80,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _health: 100
   _maxHealth: 100
-  Dead:
+  _died:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1254586022}
@@ -95,7 +95,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  Damaged:
+  _damaged:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 5575075778216025646}
@@ -110,6 +110,9 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  _healed:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &5575075778216025646
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -127,7 +130,7 @@ MonoBehaviour:
   _gradient:
     serializedVersion: 2
     key0: {r: 0, g: 0, b: 0, a: 1}
-    key1: {r: 0.4433962, g: 0.053782884, b: 0.035555363, a: 1}
+    key1: {r: 0.3018868, g: 0.014513788, b: 0, a: 1}
     key2: {r: 0, g: 0, b: 0, a: 0}
     key3: {r: 0, g: 0, b: 0, a: 0}
     key4: {r: 0, g: 0, b: 0, a: 0}
@@ -200,34 +203,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _interactPointOffset: {x: 0, y: 0, z: 4.25}
   _unitPivotPointOffset: {x: 0, y: 0, z: -2.25}
-  _rotationFactor: 5
-  Rotated:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: ForwardWheelRotator, Assembly-CSharp
-        m_MethodName: LookAtDirection
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: ForwardWheelRotator, Assembly-CSharp
-        m_MethodName: LookAtDirection
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+  _yawFactor: 7.5
+  _pitchFactor: 10
+  _isMovementFactorAffectRotation: 1
 --- !u!114 &5575075778216025643
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -7,6 +7,13 @@ namespace PathSystem
 {
     public class PathDriversRegulator : MonoBehaviour, IDriversRegistrator
     {
+        enum Sort
+        {
+            ByProgress,
+            BySpawn
+        }
+
+        [SerializeField] private Sort _driversOrder = Sort.BySpawn;
         [SerializeField] private InterfaceComponent<IPathPresenter> _pathPresenterComponent;
 
         private IPathPresenter _pathPresenter;
@@ -47,7 +54,10 @@ namespace PathSystem
             pathDriver.LeftPath -= OnPathDriverLeftPath;
             pathDriver.SpeedChanged -= OnPathDriverSpeedChanged;
             _registeredDrivers.Remove(pathDriver);
-            SortDriversByPathProgress();
+
+            if(_driversOrder == Sort.ByProgress)
+                SortDriversByPathProgress();
+
             UpdateDriversSpeed();
         }
         private void SortDriversByPathProgress()
@@ -69,7 +79,10 @@ namespace PathSystem
             pathDriver.LeftPath += OnPathDriverLeftPath;
             pathDriver.SpeedChanged += OnPathDriverSpeedChanged;
             _registeredDrivers.Add(pathDriver);
-            SortDriversByPathProgress();
+
+            if (_driversOrder == Sort.ByProgress)
+                SortDriversByPathProgress();
+
             UpdateDriversSpeed();
         }
     }

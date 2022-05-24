@@ -20,6 +20,7 @@ namespace Effects
     {
         [SerializeField] private List<AudioSource> _audioSources;
 
+        private int _lastSourceId = 0;
         private List<SourceInfo> _sourcesInfo;
 
         private void Awake()
@@ -28,12 +29,7 @@ namespace Effects
 
             for (int i = 0; i < _audioSources.Count; i++)
                 _sourcesInfo.Add(new SourceInfo(_audioSources[i], false));
-        }
-
-        public void HandleSound(AudioClip clip)
-        {
-            StartCoroutine(PlaySoundInFreeSource(clip));          
-        }
+        }      
         private IEnumerator PlaySoundInFreeSource(AudioClip clip)
         {
             int sourceId = -1;
@@ -58,7 +54,14 @@ namespace Effects
             yield return new WaitForSecondsRealtime(clip.length);
 
             info.IsBusy = false;
-            _sourcesInfo[sourceId] = info;
+            if(sourceId < _sourcesInfo.Count
+               && sourceId >= 0)
+                _sourcesInfo[sourceId] = info;
+        }
+
+        public void HandleSound(AudioClip clip)
+        {
+            StartCoroutine(PlaySoundInFreeSource(clip));
         }
     }
 }

@@ -17,7 +17,7 @@ namespace PathSystem
         public float GetProgress(Vector3 walkerPosition)
         {
             Vector3 closestPoint = _pathCreator.path.GetClosestPointOnPath(walkerPosition);
-            float result = _pathCreator.path.GetClosestTimeOnPath(walkerPosition);
+            float result = _pathCreator.path.GetClosestDistanceAlongPath(walkerPosition);
             result += Vector3.Distance(closestPoint, walkerPosition);
             return result;
         }
