@@ -22,23 +22,30 @@ namespace Interaction
             bool previousState = _isSelected;
             _isSelected = true;
 
+            bool result = OnSelecting();
+
             if (!previousState)
                 Selected.Invoke(this);
 
-            return OnSelected();
+            return result;
         }
+
         public bool Unselect()
         {
             bool previousState = _isSelected;
             _isSelected = false;
 
+            bool result = OnUnselecting();
+
             if (previousState)
                 Unselected.Invoke(this);
              
-            return OnSelected();
+            return result;
         }
-        protected abstract bool OnSelected();
-        protected abstract bool OnUnselected();
+
+        protected abstract bool OnSelecting();
+
+        protected abstract bool OnUnselecting();
        
     }
 }

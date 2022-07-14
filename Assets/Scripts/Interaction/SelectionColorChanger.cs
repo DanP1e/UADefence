@@ -18,12 +18,12 @@ namespace Interaction
             _originalColor = _shaderAdapter.BaseColor;
         }
 
-        protected override bool OnSelected()
+        protected override bool OnSelecting()
         {
             _shaderAdapter.BaseColor = _selectionColor;
             return true;
         }
-        protected override bool OnUnselected()
+        protected override bool OnUnselecting()
         {
             _shaderAdapter.BaseColor = _originalColor;
             return true;

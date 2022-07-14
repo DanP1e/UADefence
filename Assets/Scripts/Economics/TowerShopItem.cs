@@ -57,11 +57,11 @@ namespace Economics
             return true;        
         }
 
-        protected override bool OnSelected()
+        protected override bool OnSelecting()
         {          
             return _selectableImage.Select();
         }
-        protected override bool OnUnselected()
+        protected override bool OnUnselecting()
         {
             return _selectableImage.Unselect();
         }

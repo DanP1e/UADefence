@@ -28,6 +28,7 @@ namespace Interaction
             foreach (var item in _selections)
                 item.Select();
         }
+
         private void OnCursorRelease(InputAction.CallbackContext obj)
         {                    
             foreach (var item in _selections)
@@ -43,6 +44,7 @@ namespace Interaction
 
             _interactives.Clear();
         }
+
         private GameObject GetGameObject() 
         {         
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -52,6 +54,7 @@ namespace Interaction
 
             return null;
         }
+
         private List<T> GetCmponentsFromRay<T>()
             where T: class 
         {
