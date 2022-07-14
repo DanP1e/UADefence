@@ -15,16 +15,16 @@ namespace Weapon
         [SerializeField] private InterfaceComponent<IAimer> _aimerComponent;
         [SerializeField] private InterfaceComponent<ITimer> _fireTimerComponent;
         [SerializeField] private InterfaceComponent<ITimer> _reloadTimerComponent;
-        [Min(1)]
-        [SerializeField] private int _clipLength = 15;
+        [SerializeField] private InterfaceComponent<IMagazine> _magazineComponent;
 
         private IBulletThrower _bulletThrower;
         private ITargetPresenter<InterfaceComponent<IAlive>> _targetPresenter;
         private IAimer _aimer;
         private ITimer _fireTimer;
         private ITimer _reloadTimer;
-        private int _bulletCounter;
+        private IMagazine _magazine;
         private Component _target;
+        private bool _isSkeeped = false;
 
         private void Awake()
         {
@@ -33,6 +33,7 @@ namespace Weapon
             _fireTimer = _fireTimerComponent.Interface;
             _reloadTimer = _reloadTimerComponent.Interface;
             _aimer = _aimerComponent.Interface;
+            _magazine = _magazineComponent.Interface;
 
             _fireTimer.TimeoutEvent.AddListener(Fire);
             _reloadTimer.TimeoutEvent.AddListener(OnReloadTimeout);
@@ -41,29 +42,42 @@ namespace Weapon
         private void OnEnable()
         {
             _fireTimer.StartTimer();
-            _bulletCounter = _clipLength;
         }
         private void OnDisable()
         {
             _fireTimer.StopTimer();
         }
+        private void Update()
+        {
+            if (_isSkeeped)
+                Fire();
+        }
         private void Fire()
         {
+            _isSkeeped = true;
             if (!_aimer.IsAimed())
             {
+                _fireTimer.StopTimer();
                 UpdateTarget();
                 return;
             }
+            InterfaceComponent<IBulletDeliverer> bullet;
 
-            _bulletThrower.Throw();
-            _bulletCounter--;            
-
-            if (_bulletCounter <= 0)
+            if (!_magazine.TryGetNextBullet(out bullet))
             {
                 _fireTimer.StopTimer();
                 _reloadTimer.StartTimer();
-                _bulletCounter = _clipLength;
+                _magazine.TryReload();
             }
+            else
+            {
+                _bulletThrower.Throw();            
+            }
+
+            if (!_fireTimer.IsStarted)
+                _fireTimer.StartTimer();
+
+            _isSkeeped = false;
         }     
         private void OnReloadTimeout()
         {

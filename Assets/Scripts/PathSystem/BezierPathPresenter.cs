@@ -12,6 +12,7 @@ namespace PathSystem
         public Vector3 GetPathPoint(Vector3 pathWalkerPosition)
         {
             float pathProgress = _pathCreator.path.GetClosestDistanceAlongPath(pathWalkerPosition);
+            //float pathProgress = Random.Range(3f, 8f);
             return _pathCreator.path.GetPointAtDistance(pathProgress + _gapBetweenPoints);
         }
         public float GetProgress(Vector3 walkerPosition)

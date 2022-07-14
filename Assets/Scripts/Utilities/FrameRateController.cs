@@ -7,9 +7,13 @@ namespace Utilities
     {
         [SerializeField] private int _targetFrameRate;
 
-        private void Awake()
+        private void OnEnable()
         {
             Application.targetFrameRate = _targetFrameRate;
+        }
+        private void OnDisable()
+        {
+            Application.targetFrameRate = 0;
         }
     }
 }

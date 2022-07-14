@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c4b96043b9994c4cad0be54d6a9b6f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShaderFullName: Shader Graphs/UnitShader
-  BaseColorPropertyName: Color_2291741ace314e6b803574ef38cc054f
-  HighlightColorPropertyName: Color_52bc822c8f5947c19aab71c8ae1df4ab
-  ScaleFactorPropertyName: Vector1_9874a6f4f8a243bc8f0d2f32314cddbe
+  _shaderFullName: Shader Graphs/UnitShader
+  _baseColorPropertyName: BaseColor
+  _highlightColorPropertyName: Highlight
+  _scaleFactorPropertyName: ModelScaling
 --- !u!1 &5575075778216025645
 GameObject:
   m_ObjectHideFlags: 0
@@ -31,6 +31,7 @@ GameObject:
   - component: {fileID: 5575075778216025641}
   - component: {fileID: 5575075778216025643}
   - component: {fileID: 1254586022}
+  - component: {fileID: -1276004399317166064}
   m_Layer: 0
   m_Name: Truck
   m_TagString: Unit
@@ -203,9 +204,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _interactPointOffset: {x: 0, y: 0, z: 4.25}
   _unitPivotPointOffset: {x: 0, y: 0, z: -2.25}
-  _yawFactor: 7.5
-  _pitchFactor: 10
-  _isMovementFactorAffectRotation: 1
+  _unitRotatorComponent:
+    _objectWithInterface: {fileID: -1276004399317166064}
 --- !u!114 &5575075778216025643
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -221,7 +221,7 @@ MonoBehaviour:
   _unitComponent:
     _objectWithInterface: {fileID: 5575075778216025641}
   _speed: 5
-  _tragetReachDistance: 2
+  _tragetReachDistance: 0.5
   _pathPresenterComponent:
     _objectWithInterface: {fileID: 0}
   TargetReached:
@@ -241,6 +241,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _destroyedObjects:
   - {fileID: 5575075778216025645}
+--- !u!114 &-1276004399317166064
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5575075778216025645}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e2e357070f6df14ba64c36698618b52, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rotationFactor: 0.8
+  _isMovementFactorAffectRotation: 0
 --- !u!1001 &5659540351478291669
 PrefabInstance:
   m_ObjectHideFlags: 0

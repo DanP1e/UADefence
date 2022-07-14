@@ -12,8 +12,9 @@ namespace Effects
 
         private float _timer = 0;
 
-        public float Time { get => _time; set => _time = value; }
+        public float Interval { get => _time; set => _time = value; }
         public bool IsCyclical { get => _isCyclical; set => _isCyclical = value; }
+        public bool IsStarted { get => enabled; }
         public UnityEvent TimeoutEvent => _timeoutEvent;
 
         private void Tick()
@@ -31,9 +32,7 @@ namespace Effects
             _timer += UnityEngine.Time.deltaTime;
 
             if (_timer >= _time)
-            {
                 Tick();
-            }           
         }      
         protected virtual void OnTimeOut() { }
 

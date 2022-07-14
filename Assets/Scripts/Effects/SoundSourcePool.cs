@@ -58,6 +58,11 @@ namespace Effects
                && sourceId >= 0)
                 _sourcesInfo[sourceId] = info;
         }
+        [ContextMenu("Load local audio sources")]
+        private void LoadLocalSources() 
+        {
+            _audioSources = new List<AudioSource>(GetComponents<AudioSource>());
+        }
 
         public void HandleSound(AudioClip clip)
         {

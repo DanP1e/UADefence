@@ -2,33 +2,6 @@
     "name": "MainControls",
     "maps": [
         {
-            "name": "Units",
-            "id": "cf2a0147-c68c-4ab7-90cb-2c6aae469e14",
-            "actions": [
-                {
-                    "name": "Shoot",
-                    "type": "Button",
-                    "id": "edf95c20-1e9f-4272-b72a-98549559d7c9",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": ""
-                }
-            ],
-            "bindings": [
-                {
-                    "name": "",
-                    "id": "2d282783-06fa-4c48-972d-c0e30fee5617",
-                    "path": "<Mouse>/leftButton",
-                    "interactions": "Press(pressPoint=0.1)",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Shoot",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                }
-            ]
-        },
-        {
             "name": "Global",
             "id": "82e619e6-0290-4039-ab7f-c6b9c70b6576",
             "actions": [
@@ -37,6 +10,22 @@
                     "type": "Value",
                     "id": "a02b6220-3d90-450d-bbcb-805c61622170",
                     "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "CursorPress",
+                    "type": "Button",
+                    "id": "ff3c1f01-6524-4b08-af08-945316bb0773",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "CursorRelease",
+                    "type": "Button",
+                    "id": "31f6cc7e-49f7-4309-9fbc-0649704165b6",
+                    "expectedControlType": "Button",
                     "processors": "",
                     "interactions": ""
                 }
@@ -50,6 +39,50 @@
                     "processors": "",
                     "groups": "",
                     "action": "MouseScreenPosition",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "3b18a338-89f4-479a-8dfb-3248ee87769a",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "Press",
+                    "processors": "",
+                    "groups": "",
+                    "action": "CursorPress",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "4205376b-7691-4bb7-b8b8-7e748a0b3f7e",
+                    "path": "<Touchscreen>/press",
+                    "interactions": "Press",
+                    "processors": "",
+                    "groups": "",
+                    "action": "CursorPress",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "25d8c3df-f061-4a20-b0ef-9eb1f1c2f5d7",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "Press(behavior=1)",
+                    "processors": "",
+                    "groups": "",
+                    "action": "CursorRelease",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f65c4932-f305-4ce4-9e09-61609cafc43b",
+                    "path": "<Touchscreen>/press",
+                    "interactions": "Press(behavior=1)",
+                    "processors": "",
+                    "groups": "",
+                    "action": "CursorRelease",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

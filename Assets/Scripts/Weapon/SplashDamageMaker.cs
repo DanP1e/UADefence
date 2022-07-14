@@ -6,8 +6,8 @@ using UnityEngine.Events;
 
 namespace Weapon
 {
-    public class DamageMaker : BulletDetonator
-    {      
+    public class SplashDamageMaker : BulletDetonator, IDamageMaker
+    {
         [SerializeField] private float _minDamage = 50;
         [SerializeField] private float _maxDamage = 70;
         [Tooltip("График распростронения урона в зависимости от расстояния")]
@@ -16,13 +16,16 @@ namespace Weapon
 
         public UnityEvent<InterfaceComponent<IAlive>> AliveObejctDamaged;
 
+        public float MinDamage { get => _minDamage; }
+        public float MaxDamage { get => _maxDamage; }
+
         protected override void OnDetonating()
         {
             List<InterfaceComponent<IAlive>> aliveTargets = _targetsFinder.Interface.FindTargets();
             foreach (var item in aliveTargets)
             {
                 float distToItem = Vector3.Distance(
-                                    transform.position, 
+                                    transform.position,
                                     item.Object.transform.position);
 
                 item.Interface.MakeDamage(

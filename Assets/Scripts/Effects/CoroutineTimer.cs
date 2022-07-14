@@ -11,10 +11,12 @@ namespace Effects
         [SerializeField] private UnityEvent _timeoutEvent;
 
         private Coroutine _coroutine;
+        private bool _isStarted;
 
         public UnityEvent TimeoutEvent { get => _timeoutEvent; }
-        public float Time { get => _time; set => _time = value; }
+        public float Interval { get => _time; set => _time = value; }
         public bool IsCyclical { get => _isCyclical; set => _isCyclical = value; }
+        public bool IsStarted { get => _isStarted; }
 
         private void OnEnable()
         {
@@ -31,11 +33,13 @@ namespace Effects
 
         public void StartTimer()
         {
+            _isStarted = true;
             StopAllCoroutines();
             StartCoroutine(HideDeactivator());
         }
         public void StopTimer()
         {
+            _isStarted = false;
             StopAllCoroutines();
         }
     }
