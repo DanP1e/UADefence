@@ -16,6 +16,7 @@ namespace Effects
         {
             Target.localScale = _startScale;
         }
+
         public void RandomizeScale() 
         {
             CheckTargetExist();

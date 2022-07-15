@@ -1,9 +1,9 @@
-﻿using Effects;
-using Entity;
+﻿using Entity;
 using InspectorAddons;
 using UnityEngine;
 using Utilities;
-using System.Linq;
+using Weapon.Aim;
+using Zenject;
 
 namespace Weapon
 {
@@ -11,17 +11,16 @@ namespace Weapon
         MonoBehaviour, 
         ITargetPresenter<InterfaceComponent<IAlive>>       
     {
-        [SerializeField] private InterfaceComponent<IAreaPresenter> _areaPresenterComponent;
-        [SerializeField]
-        InterfaceComponent<IContainer<InterfaceComponent<IAlive>>> _aliveObjectsContainerComponent;
-
         private IAreaPresenter _rangeKepeer;
         private IContainer<InterfaceComponent<IAlive>> _aliveObjectsContainer;
 
-        protected void Awake()
+        [Inject]
+        public void Construct(
+            IAreaPresenter rangeKepeer,
+            IContainer<InterfaceComponent<IAlive>> aliveObjectsContainer)
         {
-            _rangeKepeer = _areaPresenterComponent.Interface;
-            _aliveObjectsContainer = _aliveObjectsContainerComponent.Interface;
+            _rangeKepeer = rangeKepeer;
+            _aliveObjectsContainer = aliveObjectsContainer;
         }       
 
         public bool TryGetTargetComponent(

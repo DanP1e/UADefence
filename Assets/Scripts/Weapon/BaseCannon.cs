@@ -4,54 +4,77 @@ using InspectorAddons;
 using System;
 using UnityEngine;
 using Weapon.Aim;
+using Zenject;
 
 namespace Weapon
 {
-    public sealed class BaseCannon : MonoBehaviour
+    public class BaseCannon : MonoBehaviour
     {
-        [SerializeField] private InterfaceComponent<IBulletThrower> _bulletThrowerComponent;
-        [SerializeField]
-        InterfaceComponent<ITargetPresenter<InterfaceComponent<IAlive>>> _targetPresenterComponent;
-        [SerializeField] private InterfaceComponent<IAimer> _aimerComponent;
-        [SerializeField] private InterfaceComponent<ITimer> _fireTimerComponent;
-        [SerializeField] private InterfaceComponent<ITimer> _reloadTimerComponent;
-        [SerializeField] private InterfaceComponent<IMagazine> _magazineComponent;
-
-        private IBulletThrower _bulletThrower;
-        private ITargetPresenter<InterfaceComponent<IAlive>> _targetPresenter;
-        private IAimer _aimer;
-        private ITimer _fireTimer;
-        private ITimer _reloadTimer;
-        private IMagazine _magazine;
         private Component _target;
         private bool _isSkeeped = false;
+        private ITimer _fireTimer;
+        private ITimer _reloadTimer;
+        private IBulletThrower _bulletThrower;
+        private IAimer _aimer;
+        private IMagazine _magazine;
+        private ITargetPresenter<InterfaceComponent<IAlive>> _targetPresenter;
 
-        private void Awake()
+        #region Injection
+
+        [Inject]
+        public void Construct(
+            IBulletThrower bulletThrower, 
+            IAimer aimer, 
+            IMagazine magazine,
+            ITargetPresenter<InterfaceComponent<IAlive>> targetPresenter) 
         {
-            _bulletThrower = _bulletThrowerComponent.Interface;
-            _targetPresenter = _targetPresenterComponent.Interface;
-            _fireTimer = _fireTimerComponent.Interface;
-            _reloadTimer = _reloadTimerComponent.Interface;
-            _aimer = _aimerComponent.Interface;
-            _magazine = _magazineComponent.Interface;
+            _bulletThrower = bulletThrower;
+            _aimer = aimer;
+            _magazine = magazine;
+            _targetPresenter = targetPresenter;
+        }
+
+        [Inject]
+        public void InjectTimers(
+            [Inject(Id = "fire")] ITimer fire,
+            [Inject(Id = "reload")] ITimer reload) 
+        {
+            _fireTimer = fire;
+            _reloadTimer = reload;
 
             _fireTimer.TimeoutEvent.AddListener(Fire);
             _reloadTimer.TimeoutEvent.AddListener(OnReloadTimeout);
             _reloadTimer.IsCyclical = false;
         }
+
+        #endregion
+
+        public void UpdateTarget()
+        {
+            InterfaceComponent<IAlive> component;
+            if (!_targetPresenter.TryGetTargetComponent(transform.position, out component))
+                return;
+
+            _target = component.Object.transform;
+            _aimer.StartAiming(_target.transform);
+        }
+
         private void OnEnable()
         {
             _fireTimer.StartTimer();
         }
+
         private void OnDisable()
         {
             _fireTimer.StopTimer();
         }
+
         private void Update()
         {
             if (_isSkeeped)
                 Fire();
         }
+
         private void Fire()
         {
             _isSkeeped = true;
@@ -71,28 +94,19 @@ namespace Weapon
             }
             else
             {
-                _bulletThrower.Throw();            
+                _bulletThrower.Throw();
             }
 
             if (!_fireTimer.IsStarted)
                 _fireTimer.StartTimer();
 
             _isSkeeped = false;
-        }     
+        }
+
         private void OnReloadTimeout()
         {
             _fireTimer.StartTimer();
             _reloadTimer.StopTimer();
-        }
-
-        public void UpdateTarget()
-        {
-            InterfaceComponent<IAlive> component;
-            if (!_targetPresenter.TryGetTargetComponent(transform.position, out component))
-                return;
-
-            _target = component.Object.transform;
-            _aimer.StartAiming(_target.transform);
-        }
+        }    
     }
 }

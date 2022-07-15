@@ -1,8 +1,6 @@
-﻿using Effects;
-using System;
-using UnityEngine;
+﻿using UnityEngine;
 
-namespace Weapon
+namespace Weapon.Aim
 {
     public class SphericalAreaPresenter : MonoBehaviour, IAreaPresenter
     {

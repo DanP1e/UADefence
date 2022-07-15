@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Effects
+namespace Weapon.Aim
 {
     public interface IAreaPresenter
     {

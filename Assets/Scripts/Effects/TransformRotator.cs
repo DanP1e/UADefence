@@ -9,7 +9,8 @@ namespace Effects
             CheckTargetExist();
             Target.Rotate(angles);
         }
-        public void RandomRotate()
+
+        public void RandomizeRotation()
         {
             CheckTargetExist();
             Target.Rotate(GetRandomVector());

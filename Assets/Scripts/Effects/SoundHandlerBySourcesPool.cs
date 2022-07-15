@@ -16,7 +16,7 @@ namespace Effects
             IsBusy = isBusy;
         }
     }
-    public class SoundSourcePool : MonoBehaviour, ISoundHandler
+    public class SoundHandlerBySourcesPool : MonoBehaviour, ISoundHandler
     {
         [SerializeField] private List<AudioSource> _audioSources;
 

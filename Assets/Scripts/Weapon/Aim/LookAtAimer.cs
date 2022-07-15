@@ -3,6 +3,7 @@ using InspectorAddons;
 using System;
 using UnityEngine;
 using UnityEngine.Events;
+using Zenject;
 
 namespace Weapon.Aim
 {
@@ -13,49 +14,53 @@ namespace Weapon.Aim
         [SerializeField] private float _deviationAngle;
         [SerializeField] private float _rotationSpeed;
         [SerializeField] private bool _lockXAxis;
-        [SerializeField] private InterfaceComponent<IAreaPresenter> _areaPresenterComponent;
+        [SerializeField] private Transform _rotatingObject;
 
         private IAreaPresenter _areaPresenter;
         private Transform _target;
 
-        private void Awake()
+        [Inject]
+        public void Construct(IAreaPresenter areaPresenter)
         {
-            _areaPresenter = _areaPresenterComponent.Interface;
+            _areaPresenter = areaPresenter;
         }
-        private void Update()
-        {
-            if (_target == null)
-                return;
 
-            Vector3 translatedTarget = _target.position - transform.position;
-            if(_lockXAxis)
-                translatedTarget.y = 0;
-
-            var newRotation = Quaternion.LookRotation(translatedTarget);
-            transform.rotation = Quaternion.Slerp(
-                transform.rotation,
-                newRotation,
-                Time.deltaTime * _rotationSpeed);
-        }         
-     
         public void StopAim()
         {
             _target = null;
             enabled = false;
         }
+
         public void StartAiming(Transform target)
         {
             _target = target;           
             enabled = true;
         }
+
         public bool IsAimed()
         {
             if (_target == null)
                 return false;
 
-            Vector3 translatedTarget = _target.position - transform.position;
-            bool aimed = Vector3.Angle(transform.forward, translatedTarget) <= _deviationAngle;
+            Vector3 translatedTarget = _target.position - _rotatingObject.position;
+            bool aimed = Vector3.Angle(_rotatingObject.forward, translatedTarget) <= _deviationAngle;
             return aimed == true && _areaPresenter.IsInArea(_target.position);
+        }
+
+        private void Update()
+        {
+            if (_target == null)
+                return;
+
+            Vector3 translatedTarget = _target.position - _rotatingObject.position;
+            if (_lockXAxis)
+                translatedTarget.y = 0;
+
+            var newRotation = Quaternion.LookRotation(translatedTarget);
+            _rotatingObject.rotation = Quaternion.Slerp(
+                _rotatingObject.rotation,
+                newRotation,
+                Time.deltaTime * _rotationSpeed);
         }
     }
 }
