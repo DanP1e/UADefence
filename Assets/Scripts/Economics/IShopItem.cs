@@ -4,16 +4,10 @@ using UnityEngine.Events;
 
 namespace Economics
 {
-    public interface IShopItem : ISelectable
+    public interface IShopItem
     {
         float Price { get; }
         string Name { get; }
-        Texture2D Icon { get; }
-
-        bool Buy(IWallet wallet);
-        bool Sell(IWallet wallet);
-
-        UnityEvent<IShopItem> Bought { get; }
-        UnityEvent<IShopItem> Sold { get; }
+        Sprite Sprite { get; }
     }
 }

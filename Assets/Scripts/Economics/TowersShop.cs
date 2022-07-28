@@ -1,77 +1,148 @@
 ﻿using InspectorAddons;
 using Interaction;
-using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.Events;
+using Zenject;
+using ViewControllers;
+using System;
+using Weapon;
 
 namespace Economics
 {
     public sealed class TowersShop : MonoBehaviour
     {
-        [SerializeField] private Button _buyButton;
-        [SerializeField] private Button _sellButton;
-        [SerializeField] private InterfaceComponent<IWallet> _playerWalletComponent;
-        [SerializeField] private List<InterfaceComponent<IShopItem>> _shopItemsComponents;
+        [SerializeField] private InterfaceComponent<IBuyButton> _buyButtonComponent;
+        [SerializeField] private string _nonePriceText = "-";
 
-        private List<IShopItem> _shopItems = new List<IShopItem>();
+        private Dictionary<IIcon, ITowerShopItem> _iconItemAssociations
+            = new Dictionary<IIcon, ITowerShopItem>();
+        private List<ITowerShopItem> _shopItems = new List<ITowerShopItem>();
         private IWallet _playerWallet;
-        private IShopItem _selectedShopItem;
-        private IShopItem _boughtShopItem;
+        private ITowerShopItem _selectedShopItem;
+        private IBuyButton _buyButton;
+        private IIconFactory _iconFactory;
+        private IWindow _shopWindow;
+        private ITowerPlacer _towerPlacer;
+        private IInteractiveObjectsUser _interactiveObjectsUser;
 
-        private void Awake()
+        public event UnityAction<IShopItem> ItemBought;
+
+        #region Injection
+        [Inject]
+        public void Construct(
+            List<ITowerShopItem> shopItems,
+            IWallet wallet,
+            IIconFactory iconFactory,
+            [Inject(Id = "towersShop")]
+            IWindow shopWindow,
+            ITowerPlacer towerPlacer,
+            IInteractiveObjectsUser interactiveObjectsUser)
         {
-            _playerWallet = _playerWalletComponent.Interface;
+            _shopItems = shopItems;
+            _playerWallet = wallet;
+            _buyButton = _buyButtonComponent.Interface;
+            _iconFactory = iconFactory;
+            _shopWindow = shopWindow;
+            _towerPlacer = towerPlacer;
+            _interactiveObjectsUser = interactiveObjectsUser;
 
-            foreach (var item in _shopItemsComponents)
-                _shopItems.Add(item.Interface);
+            CreateNewIcons();
 
-            _buyButton.onClick.AddListener(OnBuyButtonClicked);
-            _sellButton.onClick.AddListener(OnSellButtonClicked);         
-
-            foreach (var item in _shopItems)
-            {
-                item.Selected.AddListener(OnItemSelected);
-                item.Unselected.AddListener(OnItemUnselected);
-            }
-
-            if (_boughtShopItem == null)
-            {
-                _sellButton.interactable = false;
-                _buyButton.interactable = true;
-            }
+            _playerWallet.AccountChanged += UpdateBuyButton;
+            _buyButton.ButtonPressed += OnBuyButtonClicked;
+            _buyButton.Interactable = false;
+            _buyButton.SetText(_nonePriceText);
         }
+        #endregion
 
-        private void OnSellButtonClicked()
+        private void OnDisable()
         {
-            if (_boughtShopItem == null)
-                throw new NothingToSellException();
-
-            if (_boughtShopItem.Sell(_playerWallet))
-            {
-                _boughtShopItem = null;
-                _sellButton.interactable = false;
-                _buyButton.interactable = true;
-            }
+            _selectedShopItem = null;
+            _buyButton.SetText(_nonePriceText);
+            _buyButton.Interactable = false;
+            UnselectAll();
         }
 
         private void OnBuyButtonClicked()
         {
-            if (_boughtShopItem != null)
-                throw new DoubleBuyException();
+            if (_selectedShopItem != null
+            && _playerWallet.TryGetWithdraw(_selectedShopItem.Price))
+                ItemBought?.Invoke(_selectedShopItem);
 
-            if(_selectedShopItem.Buy(_playerWallet))
-                _boughtShopItem = _selectedShopItem;
+            UpdateBuyButton();           
+
+            _towerPlacer.PlaceTower(
+                _selectedShopItem.Tower, 
+                _interactiveObjectsUser.InteractionPoint);
+
+            _shopWindow.Hide();
         }
 
-        private void OnItemSelected(ISelectable item)
+        private void OnIconSelected(ISelectable selectableIcon)
         {
-            _selectedShopItem = item as IShopItem;
+            IIcon icon = (IIcon)selectableIcon;
+            ITowerShopItem item;
+
+            if (!_iconItemAssociations.TryGetValue(icon, out item))
+                throw new Exception("This icon has no association with its item!");
+
+            UnselectIconsExept(icon);
+
+            _selectedShopItem = item;
+            UpdateBuyButton();
+            _buyButton.SetText(_selectedShopItem.Price.ToString());
         }
 
-        private void OnItemUnselected(ISelectable item)
+        private bool IsCanPurchase()
         {
-            _selectedShopItem = null;
+            return _selectedShopItem != null 
+                && _playerWallet.Credits >= _selectedShopItem.Price;
+        }
+
+        private void CreateNewIcons()
+        {
+            DestroyIcons();
+
+            foreach (var item in _shopItems)
+            {
+                IIcon icon = _iconFactory.CreateNewIcon(item.Sprite);
+                icon.Selected.AddListener(OnIconSelected);
+                _iconItemAssociations.Add(icon, item);
+            }
+        }
+
+        private void DestroyIcons()
+        {
+            foreach (var iconItem in _iconItemAssociations)
+            {
+                iconItem.Key.Selected.RemoveListener(OnIconSelected);
+                iconItem.Key.Destroy();
+            }
+
+            _iconItemAssociations.Clear();
+        }
+
+        private void UpdateBuyButton()
+        {
+            _buyButton.Interactable = IsCanPurchase();
+            _buyButton.SetText(
+                _selectedShopItem == null 
+                ? _nonePriceText 
+                : _selectedShopItem.Price.ToString());
+        }
+
+        private void UnselectIconsExept(IIcon icon) 
+        {
+            foreach (var iconItem in _iconItemAssociations)
+                if (iconItem.Key != icon)
+                    iconItem.Key.Unselect();
+        }
+
+        private void UnselectAll()
+        {
+            foreach (var iconItem in _iconItemAssociations)
+                iconItem.Key.Unselect();
         }
     }
 }

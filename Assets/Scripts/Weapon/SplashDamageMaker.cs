@@ -1,38 +1,55 @@
 ﻿using Entity;
-using InspectorAddons;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
+using Zenject;
 
 namespace Weapon
 {
-    public class SplashDamageMaker : BulletDetonator, IDamageMaker
+    public class SplashDamageMaker : MonoBehaviour, IDamageMaker
     {
         [SerializeField] private float _minDamage = 50;
         [SerializeField] private float _maxDamage = 70;
         [Tooltip("График распростронения урона в зависимости от расстояния")]
         [SerializeField] private AnimationCurve _damageFunction;
-        [SerializeField] private InterfaceComponent<ITargetsFinder<InterfaceComponent<IAlive>>> _targetsFinder;
 
-        public UnityEvent<InterfaceComponent<IAlive>> AliveObejctDamaged;
+        private IBulletDeliverer _bulletDeliverer;
 
         public float MinDamage { get => _minDamage; }
         public float MaxDamage { get => _maxDamage; }
 
-        protected override void OnDetonating()
+        [Inject]
+        public void Construct(
+            IBulletDeliverer bulletDeliverer)
         {
-            List<InterfaceComponent<IAlive>> aliveTargets = _targetsFinder.Interface.FindTargets();
-            foreach (var item in aliveTargets)
-            {
-                float distToItem = Vector3.Distance(
-                                    transform.position,
-                                    item.Object.transform.position);
+            _bulletDeliverer = bulletDeliverer;
+        }
 
-                item.Interface.MakeDamage(
-                    Random.Range(_minDamage, _maxDamage) * _damageFunction.Evaluate(distToItem));
+        public void SetDamage(Vector2 minMaxDamage)
+        {
+            _minDamage = Mathf.Min(minMaxDamage.x, minMaxDamage.y);
+            _maxDamage = Mathf.Max(minMaxDamage.x, minMaxDamage.y);
+        }
 
-                AliveObejctDamaged?.Invoke(item);
-            }
+        protected virtual void OnEnable()
+        {
+            _bulletDeliverer.ObjectHit += OnObjectHit;
+        }
+
+        protected virtual void OnDisable()
+        {
+            _bulletDeliverer.ObjectHit -= OnObjectHit;
+        }
+
+        private void OnObjectHit(BulletHit bulletHit)
+        {
+            IAlive aliveObject
+                = bulletHit.GameObject.GetComponent(typeof(IAlive)) as IAlive;
+
+            if (aliveObject == null)
+                return;
+
+            float distToHit = Vector3.Distance(transform.position, bulletHit.Point);
+            aliveObject.MakeDamage(
+                    Random.Range(_minDamage, _maxDamage) * _damageFunction.Evaluate(distToHit));
         }
     }
 }

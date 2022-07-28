@@ -19,8 +19,74 @@ namespace Entity.Units
 
         public UnityEvent TargetReached;
         
-        public event Action<IPathDriver, IPathPresenter> LeftPath;
-      
+        public event Action<IPathDriver, IPathPresenter> LeftPath;     
+
+        public override void MoveTo(Vector3 target)
+        {
+            Stop();
+            _isMoving = true;
+            _target = target;
+        }
+
+        public override void Stop()
+        {
+            _isMoving = false;
+            _target = Unit.GetInteractPoint();
+        }
+
+        public void SetPathPresenter(IPathPresenter pathPresenter)
+        {
+            if (pathPresenter == null)
+                throw new ArgumentNullException();
+
+            LeftPath?.Invoke(this, _pathPresenter);
+            _pathPresenter = pathPresenter;
+            UpdateTarget();
+        }
+
+        public float GetPathProgress()
+        {
+            if (_pathPresenter == null)
+                throw new NullReferenceException($"{nameof(_pathPresenter)} is null!");
+
+            return _pathPresenter.GetProgress(Unit.GetInteractPoint());
+        }
+
+        protected void OnDrawGizmos()
+        {
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawSphere(_pathPoint, _tragetReachDistance);
+        }
+
+        protected void Update()
+        {
+            if (!_isMoving)
+                return;
+
+            if (Vector3.Distance(Unit.GetInteractPoint(), _target) < _tragetReachDistance)
+            {
+                TargetReached?.Invoke();
+                UpdateTarget();
+                return;
+            }
+            Unit.MakeMovementFrame(_target, Speed);
+        }
+
+        protected override void Awake()
+        {
+            base.Awake();
+            if (_pathPresenterComponent.IsNull())
+                return;
+
+            _pathPresenter = _pathPresenterComponent.Interface;
+            UpdateTarget();
+        }
+
+        protected virtual void OnDestroy()
+        {
+            LeftPath?.Invoke(this, _pathPresenter);
+        }
+
         private void UpdateTarget()
         {
             if (!_isUpdating)
@@ -36,66 +102,6 @@ namespace Entity.Units
             _isUpdating = true;
             MoveTo(_pathPoint);
             _isUpdating = false;
-        }
-
-        protected void OnDrawGizmos()
-        {
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawSphere(_pathPoint, _tragetReachDistance);
-        }
-        protected void Update()
-        {
-            if (!_isMoving)
-                return;
-
-            if (Vector3.Distance(Unit.GetInteractPoint(), _target) < _tragetReachDistance)
-            {
-                TargetReached?.Invoke();
-                UpdateTarget();
-                return;
-            }
-            Unit.MakeMovementFrame(_target, Speed);
-        }
-        protected override void Awake()
-        {
-            base.Awake();
-            if (_pathPresenterComponent.IsNull())
-                return;
-
-            _pathPresenter = _pathPresenterComponent.Interface;
-            UpdateTarget();
-        }
-        protected virtual void OnDestroy()
-        {
-            LeftPath?.Invoke(this, _pathPresenter);
-        }
-
-        public override void MoveTo(Vector3 target)
-        {
-            Stop();
-            _isMoving = true;
-            _target = target;
-        }
-        public override void Stop()
-        {
-            _isMoving = false;
-            _target = Unit.GetInteractPoint();
-        }
-        public void SetPathPresenter(IPathPresenter pathPresenter)
-        {
-            if (pathPresenter == null)
-                throw new ArgumentNullException();
-
-            LeftPath?.Invoke(this, _pathPresenter);
-            _pathPresenter = pathPresenter;
-            UpdateTarget();
-        }
-        public float GetPathProgress()
-        {
-            if (_pathPresenter == null)
-                throw new NullReferenceException($"{nameof(_pathPresenter)} is null!");
-
-            return _pathPresenter.GetProgress(Unit.GetInteractPoint());
         }
     }
 }

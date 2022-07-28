@@ -22,6 +22,12 @@ namespace Effects
         {
             StartTimer();
         }
+
+        private void OnDisable()
+        {
+            StopTimer();
+        }
+
         private IEnumerator HideDeactivator()
         {
             do

@@ -1,8 +1,9 @@
 using InspectorAddons;
+using Spawn;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-using Utilities;
+using Zenject;
 
 namespace PathSystem
 {
@@ -14,23 +15,24 @@ namespace PathSystem
         [SerializeField] private UnityEvent<GameObject> _objectSpawned;
 
         private int _spawnCounter = 0;
+        private DiContainer _sceneContainer;
 
         public UnityEvent<GameObject> ObjectSpawned => _objectSpawned;
 
-        protected void OnDrawGizmosSelected()
+        [Inject]
+        public void Construct(
+            [Inject(Id = "scene")] DiContainer sceneContainer)
         {
-            Gizmos.color = Color.red;
-            Gizmos.DrawLine(transform.position, transform.position + transform.forward * _gizmosScale);
-            Gizmos.color = Color.blue;
-            Gizmos.DrawSphere(transform.position, 0.25f * _gizmosScale);
+            _sceneContainer = sceneContainer;
         }
 
         public GameObject SpawnObject()
         {           
-            GameObject spawnedObject = Instantiate(
-                _spawnList[_spawnCounter].Object.gameObject,
-                transform.position,
-                transform.rotation);
+            GameObject spawnedObject = _sceneContainer.InstantiatePrefab(
+                _spawnList[_spawnCounter].Object.gameObject);
+
+            spawnedObject.transform.position = transform.position;
+            spawnedObject.transform.rotation = transform.rotation;
 
             IPathDriver driver = (IPathDriver)spawnedObject.GetComponent(typeof(IPathDriver));
 
@@ -44,6 +46,7 @@ namespace PathSystem
 
             return spawnedObject;
         }
+
         public void TrySpawnNextObject()
         {
             if (!gameObject.activeInHierarchy 
@@ -51,6 +54,14 @@ namespace PathSystem
                 return;
 
             SpawnObject();
+        }
+
+        protected void OnDrawGizmosSelected()
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawLine(transform.position, transform.position + transform.forward * _gizmosScale);
+            Gizmos.color = Color.blue;
+            Gizmos.DrawSphere(transform.position, 0.25f * _gizmosScale);
         }
     }
 }

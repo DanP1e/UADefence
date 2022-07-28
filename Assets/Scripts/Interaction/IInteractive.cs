@@ -1,7 +1,10 @@
-﻿namespace Interaction
+﻿using UnityEngine;
+
+namespace Interaction
 {
     public interface IInteractive
     {
-        public bool Interact();
+        public bool Interact(Vector3 interactPoint);
+        public bool StopInteraction();
     }
 }

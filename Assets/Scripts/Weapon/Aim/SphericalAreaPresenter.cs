@@ -6,6 +6,12 @@ namespace Weapon.Aim
     {
         [SerializeField] private float _range = 12f;
 
+        public float AreaScale 
+        { 
+            get => _range; 
+            set => _range = value; 
+        }
+
         private void OnDrawGizmosSelected()
         {
             Gizmos.color = Color.red;

@@ -2,7 +2,6 @@
 using InspectorAddons;
 using System;
 using UnityEngine;
-using UnityEngine.Events;
 using Zenject;
 
 namespace Weapon.Aim
@@ -18,6 +17,12 @@ namespace Weapon.Aim
 
         private IAreaPresenter _areaPresenter;
         private Transform _target;
+
+        public float AimRange 
+        { 
+            get => _areaPresenter.AreaScale; 
+            set => _areaPresenter.AreaScale = value; 
+        }
 
         [Inject]
         public void Construct(IAreaPresenter areaPresenter)

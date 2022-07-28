@@ -1,7 +1,9 @@
-﻿namespace Weapon
+﻿using UnityEngine;
+
+namespace Weapon
 {
     public interface IBulletThrower
     {
-        void Throw();
+        void Throw(IBulletRepresentative bulletPrefab, Vector2 damage);
     }
 }

@@ -4,10 +4,10 @@ namespace Weapon
 {
     public interface IMagazine
     {
-        int MaxCapacity { get; }
+        int MaxCapacity { get; set; }
         int Charges { get; }
 
-        bool TryGetNextBullet(out InterfaceComponent<IBulletDeliverer> bulletDeliverer);
+        bool TryGetNextBullet(out IBulletRepresentative bulletRepresentative);
         bool TryReload();
     }
 }

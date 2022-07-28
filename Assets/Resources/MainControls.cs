@@ -41,6 +41,14 @@ public class @MainControls : IInputActionCollection, IDisposable
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""CursorClick"",
+                    ""type"": ""Button"",
+                    ""id"": ""4eec7696-9920-450e-9a0d-430241f45045"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -98,6 +106,28 @@ public class @MainControls : IInputActionCollection, IDisposable
                     ""action"": ""CursorRelease"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c20a264a-3065-45f0-b14f-2024ca0d27af"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": ""Press(behavior=2)"",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""CursorClick"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d3ad011d-b892-45e4-ab39-21360ee69e71"",
+                    ""path"": ""<Touchscreen>/press"",
+                    ""interactions"": ""Press(behavior=2)"",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""CursorClick"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -109,6 +139,7 @@ public class @MainControls : IInputActionCollection, IDisposable
         m_Global_MouseScreenPosition = m_Global.FindAction("MouseScreenPosition", throwIfNotFound: true);
         m_Global_CursorPress = m_Global.FindAction("CursorPress", throwIfNotFound: true);
         m_Global_CursorRelease = m_Global.FindAction("CursorRelease", throwIfNotFound: true);
+        m_Global_CursorClick = m_Global.FindAction("CursorClick", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -161,6 +192,7 @@ public class @MainControls : IInputActionCollection, IDisposable
     private readonly InputAction m_Global_MouseScreenPosition;
     private readonly InputAction m_Global_CursorPress;
     private readonly InputAction m_Global_CursorRelease;
+    private readonly InputAction m_Global_CursorClick;
     public struct GlobalActions
     {
         private @MainControls m_Wrapper;
@@ -168,6 +200,7 @@ public class @MainControls : IInputActionCollection, IDisposable
         public InputAction @MouseScreenPosition => m_Wrapper.m_Global_MouseScreenPosition;
         public InputAction @CursorPress => m_Wrapper.m_Global_CursorPress;
         public InputAction @CursorRelease => m_Wrapper.m_Global_CursorRelease;
+        public InputAction @CursorClick => m_Wrapper.m_Global_CursorClick;
         public InputActionMap Get() { return m_Wrapper.m_Global; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -186,6 +219,9 @@ public class @MainControls : IInputActionCollection, IDisposable
                 @CursorRelease.started -= m_Wrapper.m_GlobalActionsCallbackInterface.OnCursorRelease;
                 @CursorRelease.performed -= m_Wrapper.m_GlobalActionsCallbackInterface.OnCursorRelease;
                 @CursorRelease.canceled -= m_Wrapper.m_GlobalActionsCallbackInterface.OnCursorRelease;
+                @CursorClick.started -= m_Wrapper.m_GlobalActionsCallbackInterface.OnCursorClick;
+                @CursorClick.performed -= m_Wrapper.m_GlobalActionsCallbackInterface.OnCursorClick;
+                @CursorClick.canceled -= m_Wrapper.m_GlobalActionsCallbackInterface.OnCursorClick;
             }
             m_Wrapper.m_GlobalActionsCallbackInterface = instance;
             if (instance != null)
@@ -199,6 +235,9 @@ public class @MainControls : IInputActionCollection, IDisposable
                 @CursorRelease.started += instance.OnCursorRelease;
                 @CursorRelease.performed += instance.OnCursorRelease;
                 @CursorRelease.canceled += instance.OnCursorRelease;
+                @CursorClick.started += instance.OnCursorClick;
+                @CursorClick.performed += instance.OnCursorClick;
+                @CursorClick.canceled += instance.OnCursorClick;
             }
         }
     }
@@ -208,5 +247,6 @@ public class @MainControls : IInputActionCollection, IDisposable
         void OnMouseScreenPosition(InputAction.CallbackContext context);
         void OnCursorPress(InputAction.CallbackContext context);
         void OnCursorRelease(InputAction.CallbackContext context);
+        void OnCursorClick(InputAction.CallbackContext context);
     }
 }

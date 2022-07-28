@@ -1,46 +1,57 @@
-using InspectorAddons;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
+using Zenject;
 
 namespace Weapon
 {
-    public class BulletDetonator : MonoBehaviour
+    public class BulletDetonator : MonoBehaviour, IDetonator
     {
-        [SerializeField] private GameObject _detonateEffect;
-        [SerializeField] private Component[] _removableComponents;
-        [SerializeField] private float _detonationDelay = 0.1f;
-        [SerializeField] private float _detonationTime;
+        [SerializeField] private float _detonationDelay = 0.02f;
+
+        public event UnityAction Detonating;
+        public event UnityAction Detonated;
+
         private bool _isDetonating = false;
+        private IBulletDeliverer _bulletDeliverer;
+
+        [Inject]
+        public void Construct(IBulletDeliverer bulletDeliverer) 
+        {
+            _bulletDeliverer = bulletDeliverer;
+        }
+
+        public void Detonate()
+        {
+            if (!_isDetonating)
+                StartCoroutine(MakeBoom());
+        }
+
+        protected virtual void OnDetonating() { }
+
+        protected virtual void OnEnable()
+        {
+            _bulletDeliverer.ObjectHit += OnObjectHit;
+        }
+
+        protected virtual void OnDisable()
+        {
+            _bulletDeliverer.ObjectHit -= OnObjectHit;
+        }
+
+        private void OnObjectHit(BulletHit arg0)
+        {
+            Detonate();
+        }
 
         private IEnumerator MakeBoom()
         {
             _isDetonating = true;
-            yield return new WaitForSeconds(_detonationDelay);          
+            yield return new WaitForSeconds(_detonationDelay);
+            Detonating?.Invoke();
             OnDetonating();
-            foreach (Component item in _removableComponents)
-                Destroy(item);
-            
-            _detonateEffect.gameObject.SetActive(true);
-
-            yield return new WaitForSeconds(_detonationTime);       
-            OnDetonated();
-            Destroy(gameObject);
-        }
-
-        /// <summary>
-        /// Вызывается в момент детонации (перед проигрыванием эффектов).
-        /// </summary>
-        protected virtual void OnDetonating() { }
-        /// <summary>
-        /// Вызывается после детонации (после проигрывания эффектов).
-        /// </summary>
-        protected virtual void OnDetonated() { }
-
-        public void Detonate()
-        { 
-            if(!_isDetonating)
-                StartCoroutine(MakeBoom()); 
-        }
-    } 
+            yield return new WaitForEndOfFrame();
+            Detonated?.Invoke();
+        }     
+    }
 }

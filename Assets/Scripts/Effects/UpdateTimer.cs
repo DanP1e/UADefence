@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Events;
 
 namespace Effects
@@ -29,11 +28,12 @@ namespace Effects
 
         protected void Update()
         {
-            _timer += UnityEngine.Time.deltaTime;
+            _timer += Time.deltaTime;
 
             if (_timer >= _time)
                 Tick();
         }      
+
         protected virtual void OnTimeOut() { }
 
         public void StartTimer()
@@ -41,6 +41,7 @@ namespace Effects
             _timer = 0;            
             enabled = true;
         }
+
         public void StopTimer()
         {
             enabled = false;

@@ -3,24 +3,36 @@ using UnityEngine;
 
 namespace Weapon
 {
-    public class MonoBulletMagazine : MonoBehaviour, IMonoBulletMagazine
+    public class MonoBulletMagazine : MonoBehaviour, IMagazine
     {
         [Min(1)]
         [SerializeField] private int _maxCapacity;
-        [Min(0)]
-        [SerializeField] private int _charges;
-        [SerializeField] private InterfaceComponent<IBulletDeliverer> _bulletDelivererComponent;
+        [SerializeField] private InterfaceComponent<IBulletRepresentative> _bulletComponent;
 
-        public int MaxCapacity => _maxCapacity;
+        private int _charges = 1;
+
+        protected virtual void Awake() 
+        {
+            TryReload();
+        }
+
+        public int MaxCapacity
+        { 
+            get => _maxCapacity; 
+
+            set
+            { 
+                _maxCapacity = value;
+                TryReload();
+            } 
+        }
+
         public int Charges => _charges;
 
-        public InterfaceComponent<IBulletDeliverer> GetBullet()
-            => _bulletDelivererComponent;
-
-        public bool TryGetNextBullet(out InterfaceComponent<IBulletDeliverer> bulletDeliverer)
+        public bool TryGetNextBullet(out IBulletRepresentative bullet)
         {
             _charges--;
-            bulletDeliverer = _charges >= 0 ? _bulletDelivererComponent : null;
+            bullet = _charges >= 0 ? _bulletComponent.Interface : null;
             return _charges >= 0;
         }
 

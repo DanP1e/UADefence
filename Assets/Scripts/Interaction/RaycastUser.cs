@@ -1,19 +1,45 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.InputSystem;
+using Utilities;
+using ViewControllers;
+using Zenject;
 
 namespace Interaction
 {
-    public sealed class RaycastUser : MonoBehaviour
+    public sealed class RaycastUser : MonoBehaviour, IInteractiveObjectsUser
     {
+        private OverUITester _overUITester;
         private MainControls _mainControls;
         private List<ISelectable> _selections = new List<ISelectable>();
-        private List<IInteractive> _interactives = new List<IInteractive>();
+        private List<IInteractive> _interactiveComponents = new List<IInteractive>();
         private GameObject _gameObject;
+        private Vector3 _interactPoint;
+        private bool _isInteracting = false;
+        private bool _isOnPressMouseOverUI = false;
+
+        public Vector3 InteractionPoint => _interactPoint;
+        public List<IInteractive> InteractiveComponents => _interactiveComponents;
+        public GameObject InteractedGameObject => _gameObject;
+
+        public event UnityAction<GameObject, List<IInteractive>, Vector3> Interacted;
+
+        [Inject]
+        public void Construct(IWindowsHandler windowsHandler) 
+        {
+            windowsHandler.WindowHided += OnSomeWindowHided;
+        }
+
+        private void OnSomeWindowHided(IWindow arg0)
+        {
+            _isInteracting = false;
+        }
 
         private void Awake()
         {
+            _overUITester = new OverUITester(LayerMask.NameToLayer("UI"));
             _mainControls = new MainControls();
             _mainControls.Global.CursorPress.performed += OnCursorPress;
             _mainControls.Global.CursorRelease.performed += OnCursorRelease;
@@ -22,35 +48,85 @@ namespace Interaction
 
         private void OnCursorPress(InputAction.CallbackContext obj)
         {
-            _interactives = GetCmponentsFromRay<IInteractive>();
+            _isOnPressMouseOverUI = _overUITester.IsPointerOverUIElement();
 
+            if (_isInteracting)
+            {
+                if (!_isOnPressMouseOverUI)
+                {
+                    StopInteractions();
+                    _isInteracting = false;
+                }
+            }
+            else
+            {
+                _interactiveComponents = GetCmponentsFromRay<IInteractive>();
+                _isInteracting = _interactiveComponents.Count > 0;
+            }
+
+            SelectComponents();
+        }
+
+        private void OnCursorRelease(InputAction.CallbackContext obj)
+        {
+            UnselectComponents();
+
+            if (_gameObject != GetGameObject()
+                || _isOnPressMouseOverUI
+                || !_isInteracting)
+                return;
+
+            InteractWithComponents();
+        }
+
+        private void InteractWithComponents()
+        {
+            foreach (var item in _interactiveComponents)
+                if (item != null)
+                    item.Interact(_interactPoint);
+
+            Interacted?.Invoke(_gameObject, _interactiveComponents, _interactPoint);
+        }
+
+        private void SelectComponents()
+        {
             _selections = GetCmponentsFromRay<ISelectable>();
             foreach (var item in _selections)
                 item.Select();
         }
 
-        private void OnCursorRelease(InputAction.CallbackContext obj)
-        {                    
+        private void UnselectComponents()
+        {
             foreach (var item in _selections)
-                item.Unselect();
+                if (item != null)
+                    item.Unselect();
 
             _selections.Clear();
+        }
 
-            if (_gameObject != GetGameObject())
-                return;
+        private void StopInteractions()
+        {
+            foreach (var item in _interactiveComponents)
+                if (item != null)
+                    item.StopInteraction();
 
-            foreach (var item in _interactives)
-                item.Interact();
-
-            _interactives.Clear();
+            _interactiveComponents.Clear();
         }
 
         private GameObject GetGameObject() 
-        {         
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        {
+            if (_overUITester.IsPointerOverUIElement())
+                return null;
+
+            Ray ray = Camera.main.ScreenPointToRay(
+                _mainControls.Global.MouseScreenPosition.ReadValue<Vector2>());
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit))
-                return hit.collider.gameObject;
+            {
+                _interactPoint = hit.point;
+                GameObject obj = hit.collider.gameObject;
+                return obj;
+            }
 
             return null;
         }

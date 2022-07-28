@@ -28,6 +28,14 @@
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": ""
+                },
+                {
+                    "name": "CursorClick",
+                    "type": "Button",
+                    "id": "4eec7696-9920-450e-9a0d-430241f45045",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
                 }
             ],
             "bindings": [
@@ -83,6 +91,28 @@
                     "processors": "",
                     "groups": "",
                     "action": "CursorRelease",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "c20a264a-3065-45f0-b14f-2024ca0d27af",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "Press(behavior=2)",
+                    "processors": "",
+                    "groups": "",
+                    "action": "CursorClick",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d3ad011d-b892-45e4-ab39-21360ee69e71",
+                    "path": "<Touchscreen>/press",
+                    "interactions": "Press(behavior=2)",
+                    "processors": "",
+                    "groups": "",
+                    "action": "CursorClick",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

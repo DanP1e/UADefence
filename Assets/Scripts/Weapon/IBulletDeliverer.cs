@@ -1,17 +1,19 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
+using UnityEngine.Events;
 
 namespace Weapon
 {
     public interface IBulletDeliverer
     {
+        event UnityAction<BulletHit> ObjectHit;
+
         /// <summary>
         /// Возвращает задетые объекты в текущем кадре.
         /// </summary>
         BulletHit[] GetCurrentHits();
 
         /// <summary>
-        /// Запускает пулю в указаном направлении.
+        /// Начинает движение в указаном направлении.
         /// </summary>
         void Throw(Vector3 direction);
     }
